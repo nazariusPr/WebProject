@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <include file="db/changelog/changelogs/ch-create-user-table.xml"/>
+    <include file="db/changelog/changelogs/ch-create-user-roles-table.xml"/>
+    <include file="db/changelog/changelogs/ch-create-user-credentials-table.xml"/>
+    <include file="db/changelog/changelogs/ch-create-email-verification-token-table.xml"/>
+    <include file="db/changelog/changelogs/ch-add-column-is-verified-to-user-table.xml"/>
+    <include file="/db/changelog/changelogs/ch-add-records-into-roles-table.xml"/>
+    <include file="db/changelog/changelogs/ch-create-action-table.xml"/>
+    <include file="db/changelog/changelogs/ch-create-image-table.xml"/>
+    <include file="db/changelog/changelogs/ch-add-column-text-to-action-table.xml"/>
+    <include file="db/changelog/changelogs/ch-remove-column-text-from-image.xml"/>
+    <include file="db/changelog/changelogs/ch-create-action-request-table.xml"/>
+    <include file="db/changelog/changelogs/ch-remove-column-text-from-action.xml"/>
+    <include file="db/changelog/changelogs/ch-add-column-title-to-actions-table.xml"/>
+    <include file="db/changelog/changelogs/ch-create-auth-table.xml"/>
+    <include file="db/changelog/changelogs/ch-add-column-auth-to-user-table.xml"/>
+    <include file="db/changelog/changelogs/ch-insert-records-into-auths.xml"/>
+</databaseChangeLog>

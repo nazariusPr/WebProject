@@ -1,0 +1,115 @@
+version: '3'
+services:
+  backend1:
+    image: web-project-backend
+    ports:
+      - "8081:9090"
+    environment:
+      - spring.sql.init.platform=postgres
+      - spring.datasource.url=jdbc:postgresql://db:5432/${SPRING_DATASOURCE_DATABASE}
+      - spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+      - spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+      - spring.jpa.database=POSTGRESQL
+      - spring.jpa.show-sql=true
+      - spring.jpa.hibernate.ddl-auto=none
+      - spring.liquibase.change-log=${SPRING_LIQUIBASE_CHANGE_LOG}
+      - spring.servlet.multipart.max-file-size=${SPRING_MAX_FILE_SIZE}
+      - spring.servlet.multipart.max-request-size=${SPRING_MAX_REQUEST_SIZE}
+      - spring.mvc.async.request-timeout=${SPRING_ASYNC_REQUEST_TIMEOUT}
+      - spring.mail.host=${SPRING_MAIL_HOST}
+      - spring.mail.port=${SPRING_MAIL_PORT}
+      - spring.mail.username=${SPRING_MAIL_USERNAME}
+      - spring.mail.password=${SPRING_MAIL_PASSWORD}
+      - spring.mail.properties.mail.smtp.auth=true
+      - spring.mail.properties.mail.smtp.starttls.enable=true
+      - security.secret-key=${SECRET_KEY}
+      - security.jwt.access-token-expiration=${ACCESS_TOKEN_EXPIRATION}
+      - security.jwt.refresh-token-expiration=${REFRESH_TOKEN_EXPIRATION}
+      - security.verify-token-expiration=${VERIFY_TOKEN_EXPIRATION}
+      - security.cookie-expiration=${COOKIE_EXPIRATION}
+      - openai.image-generator.url=${OPENAI_IMAGE_GENERATOR_URL}
+      - openai.image-generator.api-key=${OPENAI_API_KEY}
+      - aws.access-key=${AWS_ACCESS_KEY}
+      - aws.secret-key=${AWS_SECRET_KEY}
+      - aws.bucket-name=${AWS_BUCKET_NAME}
+      - server.port=9090
+    depends_on:
+      - db
+    command: /bin/bash -c "wait-for-it db:5432 -- java -jar /app.jar"
+    networks:
+      - app-network
+
+  backend2:
+    image: web-project-backend
+    ports:
+      - "8082:9090"
+    environment:
+      - spring.sql.init.platform=postgres
+      - spring.datasource.url=jdbc:postgresql://db:5432/${SPRING_DATASOURCE_DATABASE}
+      - spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+      - spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+      - spring.jpa.database=POSTGRESQL
+      - spring.jpa.show-sql=true
+      - spring.jpa.hibernate.ddl-auto=none
+      - spring.liquibase.change-log=${SPRING_LIQUIBASE_CHANGE_LOG}
+      - spring.servlet.multipart.max-file-size=${SPRING_MAX_FILE_SIZE}
+      - spring.servlet.multipart.max-request-size=${SPRING_MAX_REQUEST_SIZE}
+      - spring.mvc.async.request-timeout=${SPRING_ASYNC_REQUEST_TIMEOUT}
+      - spring.mail.host=${SPRING_MAIL_HOST}
+      - spring.mail.port=${SPRING_MAIL_PORT}
+      - spring.mail.username=${SPRING_MAIL_USERNAME}
+      - spring.mail.password=${SPRING_MAIL_PASSWORD}
+      - spring.mail.properties.mail.smtp.auth=true
+      - spring.mail.properties.mail.smtp.starttls.enable=true
+      - security.secret-key=${SECRET_KEY}
+      - security.jwt.access-token-expiration=${ACCESS_TOKEN_EXPIRATION}
+      - security.jwt.refresh-token-expiration=${REFRESH_TOKEN_EXPIRATION}
+      - security.verify-token-expiration=${VERIFY_TOKEN_EXPIRATION}
+      - security.cookie-expiration=${COOKIE_EXPIRATION}
+      - openai.image-generator.url=${OPENAI_IMAGE_GENERATOR_URL}
+      - openai.image-generator.api-key=${OPENAI_API_KEY}
+      - aws.access-key=${AWS_ACCESS_KEY}
+      - aws.secret-key=${AWS_SECRET_KEY}
+      - aws.bucket-name=${AWS_BUCKET_NAME}
+      - server.port=9090
+    depends_on:
+      - db
+    command: /bin/bash -c "wait-for-it db:5432 -- java -jar /app.jar"
+    networks:
+      - app-network
+
+  loadbalancer:
+    image: web-project-loadbalancer
+    ports:
+      - "9090:9090"
+    environment:
+      - server.port=9090
+    depends_on:
+      - backend1
+      - backend2
+    networks:
+      - app-network
+
+  frontend:
+    image: web-project-frontend
+    ports:
+      - "9091:9091"
+    depends_on:
+      - loadbalancer
+    networks:
+      - app-network
+
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}
+      - POSTGRES_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - POSTGRES_DB=${SPRING_DATASOURCE_DATABASE}
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
